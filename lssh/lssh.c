@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/wait.h>
 
 #define PROMPT "lambda-shell$ "
 
@@ -88,9 +89,17 @@ int main(void)
         if (strcmp(args[0], "exit") == 0) {
             break;
         }
+            pid_t pid = fork();
+        if (pid == -1) {
+            printf("Failed to fork \n");
+        } else if (pid > 0) {
+            int status;
+            waitpid(pid, &status, 0); 
+        } else {
+            execvp(args[0], &args[0]);
+        }
 
         #if DEBUG
-
         // Some debugging output
 
         // Print out the parsed command line in args[]
